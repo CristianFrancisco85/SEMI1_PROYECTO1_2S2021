@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var app = express();
 const cors = require('cors');
 var uuid = require('uuid');
-const aws_keys = require('./creds');
+const aws_keys = require('./creds_template');
 var corsOptions = { origin: true, optionsSuccessStatus: 200 };
 app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: '10mb', extended: true }));
