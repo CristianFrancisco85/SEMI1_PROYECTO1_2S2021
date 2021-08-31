@@ -15,49 +15,48 @@ const Login = () => {
     }
 
     return (
-        <Container  style={{height: '100%'}}>
+        <Container fluid>
 
-            <Row style={{justifyContent:'center',alignItems:'center',height: '30%'}}>
+            <Row className='mt-4 align-items-center justify-content-center' >
                 <Image src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Usac_logo.png" style={{height:'10em',width:'10em',marginRight:'2em'}}/>
                 <h1>U-Storage</h1>
             </Row>
             
-            <Row style={{justifyContent:"center",height: '70%'}}>
-                <Card style={{width:'30em',height:'24em'}}  border='secondary'>
+            <Row className='mt-5 justify-content-center'>
+                <Col lg={5}>
+                    <Card border='secondary'>
+                        <Card.Header><Card.Title> Login </Card.Title></Card.Header>
+                        <Card.Body>
+                            <Form onSubmit={(e)=>handleLogIn(e)}>
+                                <Form.Group>
+                                    <Form.Label>Correo Electronico</Form.Label>
+                                    <Form.Control type="email" placeholder="Enter email" name="email"/>
+                                </Form.Group>
 
-                    <Card.Header><Card.Title> Login </Card.Title></Card.Header>
-                    <Card.Body>
-                        <Form onSubmit={(e)=>handleLogIn(e)}>
-                            <Form.Group>
-                                <Form.Label>Correo Electronico</Form.Label>
-                                <Form.Control type="email" placeholder="Enter email" name="email"/>
-                            </Form.Group>
-
-                            <Form.Group>
-                                <Form.Label>Password</Form.Label>
-                                <Form.Control type="password" placeholder="Enter password" name="password"/>
-                            </Form.Group>
-                            
-
-                            <Row fluid className='mt-4'>
-                                <Col className='col-8'>
-                                    <Button variant="primary" type="submit">
-                                        Entrar
-                                    </Button>
-                                </Col>
-                                <Col className='col-4'>
-                                    <Card.Link as={Link} to="/signup">
-                                        Registrarse
-                                    </Card.Link> 
-                                </Col>
-                            </Row>      
-                        </Form>
-                    </Card.Body>
-                    <Card.Footer>
-                        Seminario 1 - Pareja X
-                    </Card.Footer>
-
-                </Card>
+                                <Form.Group>
+                                    <Form.Label>Password</Form.Label>
+                                    <Form.Control type="password" placeholder="Enter password" name="password"/>
+                                </Form.Group>
+                                
+                                <Row className='mt-4'>
+                                    <Col className='col-8'>
+                                        <Button variant="primary" type="submit">
+                                            Entrar
+                                        </Button>
+                                    </Col>
+                                    <Col className='col-4'>
+                                        <Card.Link as={Link} to="/signup">
+                                            Registrarse
+                                        </Card.Link> 
+                                    </Col>
+                                </Row>      
+                            </Form>
+                        </Card.Body>
+                        <Card.Footer>
+                            Seminario 1 - Pareja X
+                        </Card.Footer>
+                    </Card>
+                </Col>
             </Row>
             
         </Container>

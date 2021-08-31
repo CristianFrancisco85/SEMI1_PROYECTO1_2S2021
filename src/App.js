@@ -6,6 +6,8 @@ import Dashboard from './components/dashboard';
 import SignUp from './components/signup';
 import './App.css';
 import React,{useState} from 'react';
+import AddFriend from './components/addFriend';
+import ViewFiles from './components/viewFiles';
 
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
           <Route  exact path="/login" component={Login}/>
           <Route  exact path="/dashboard" component={Dashboard}/>
           <Route  exact path="/signup" component={SignUp}/>
+          <Route  exact path="/addfriend" component={AddFriend}/>
+          <Route  exact path="/viewfiles" component={ViewFiles}/>
           <Redirect from="/" to="/login" />
       </Switch>
       

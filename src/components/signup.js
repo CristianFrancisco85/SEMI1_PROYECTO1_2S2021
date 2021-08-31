@@ -17,12 +17,26 @@ const SignUp = () => {
     }
 
     return(
-        <Container  style={{height: '100%'}}>
-        <Row style={{height:'15%'}}></Row>
-        <Row style={{justifyContent:'center'}} >
-            <Col>
-                <Form onSubmit={(e)=>handleSubmit(e)}>
-                    <h1>Crear Cuenta</h1>
+        <Container fluid>
+
+        <Row>
+            <Col md={5} className='mt-5' >
+                <Row  className=' justify-content-center'>
+                    <h2>Foto de Perfil</h2>
+                </Row>
+
+                <Row className='mt-5 justify-content-center'>
+                    <Image src={userImage} style={{height:'12em',width:'12em'}} roundedCircle/>
+                </Row>
+
+                <Row className='mt-5 justify-content-center'>
+                    <FormGroup className="mb-3">
+                        <FormControl type="file" size="sm" onChange={(e)=>handleUpload(e)}/>
+                    </FormGroup>     
+                </Row>
+            </Col>
+            <Col className=' mt-5 justify-content-center align-items-center'>
+                <Form onSubmit={(e)=>handleSubmit(e)} >
                     <Form.Group>
                         <Form.Label>Username</Form.Label>
                         <FormControl required type="text" name="username" />
@@ -47,23 +61,7 @@ const SignUp = () => {
                     </Form.Group>
                 </Form>
             </Col>
-            <Col className='mt-5' >
-
-                <Row style={{justifyContent:'center'}}>
-                    <h3>Foto de Perfil</h3>
-                </Row>
-
-                <Row className='mt-5' style={{justifyContent:'center'}}>
-                    <Image src={userImage} style={{height:'12em',width:'12em'}} roundedCircle/>
-                </Row>
-
-                <Row className='mt-5' style={{justifyContent:'center'}}>
-                    <FormGroup className="mb-3">
-                        <FormControl type="file" size="sm" onChange={(e)=>handleUpload(e)}/>
-                    </FormGroup>     
-                </Row>
-
-            </Col>
+            
         </Row>
         </Container>
     )

@@ -6,6 +6,7 @@ import Item from './item'
 import UploadModal from "./uploadModal"
 import EditModal from "./editModal"
 import DeleteModal from "./deleteModal"
+import { Link } from "react-router-dom"
 
 const Dashboard = () =>{
 
@@ -16,42 +17,41 @@ const Dashboard = () =>{
     return(
         <Container fluid>
             <Row>
-            <Col className='mt-4 ml-4 col-3'>
+            <Col md={3} className='mt-4'>
                 <Row className='mt-3 justify-content-center'>
                     <Image src={userIcon} style={{height:'8em',width:'8em'}} roundedCircle></Image>
                 </Row>
                 <Row className='mt-3 justify-content-center'>
                     <h3> username </h3>
                 </Row>
-                <Row className='mt-3'>
+                <Row className='mt-3 pl-2 pr-2'>
                     <Button block variant='primary' onClick={()=>setUploadModal(true)}>Subir Archivo</Button>
                     <UploadModal visible={uploadModal} handler={setUploadModal}></UploadModal>
                 </Row>
-                <Row className='mt-3'>
+                <Row className='mt-3 pl-2 pr-2'>
                     <Button block variant='warning' onClick={()=>setEditModal(true)}>Editar Archivo</Button>
                     <EditModal visible={editModal} handler={setEditModal}></EditModal>
                 </Row>
-                <Row className='mt-3'>
+                <Row className='mt-3 pl-2 pr-2'>
                     <Button block variant='danger' onClick={()=>setDeleteModal(true)}>Eliminar Archivo</Button>
                     <DeleteModal visible={deleteModal} handler={setDeleteModal}></DeleteModal>
                 </Row>
-                <Row className='mt-3'>
-                    <Button block variant='success'>Agregar Amigo</Button>
+                <Row className='mt-3 pl-2 pr-2'>
+                    <Button block variant='success' as={Link} to='/addfriend'>Agregar Amigo</Button>
                 </Row>
-                <Row className='mt-3'>
-                    <Button block variant='info'>Ver Archivos Publicos</Button>
+                <Row className='mt-3 pl-2 pr-2'>
+                    <Button block variant='info' as={Link} to='/viewfiles'>Ver Archivos Publicos</Button>
                 </Row>
             </Col>
-            <Col className='mt-5 ml-4'>
+            <Col className='mt-5'>
 
                 <Accordion>
-
-                <Card>
+                    <Card>
                     <Accordion.Toggle as={Card.Header} eventKey="0">
                         <Card.Title>Publicos</Card.Title>
                     </Accordion.Toggle>
 
-                    <Accordion.Collapse eventKey="0" className=' overflow-auto' style={{maxHeight:'26rem',marginTop:'2em'}} >
+                    <Accordion.Collapse eventKey="0" className='overflow-auto mt-1' style={{maxHeight:'26rem'}}>
                     <Card.Body >
                         <Row className='justify-content-center'>
                             <Item></Item>
@@ -72,13 +72,15 @@ const Dashboard = () =>{
                     
                 </Card>
                 </Accordion>
+
                 <Accordion>
-                <Card>
+                    <Card>
+
                     <Accordion.Toggle as={Card.Header} eventKey="0">
                         <Card.Title>Privados</Card.Title>
                     </Accordion.Toggle>
 
-                    <Accordion.Collapse eventKey="0" className=' overflow-auto' style={{maxHeight:'26rem',marginTop:'2em'}} >
+                    <Accordion.Collapse eventKey="0" className='overflow-auto mt-1' style={{maxHeight:'26rem'}}>
                     <Card.Body >
                         <Row className='justify-content-center'>
                             <Item></Item>
@@ -97,8 +99,7 @@ const Dashboard = () =>{
                     </Card.Body>
                     </Accordion.Collapse>
                     
-                </Card>
-
+                    </Card>
                 </Accordion>
             </Col>
             </Row>
