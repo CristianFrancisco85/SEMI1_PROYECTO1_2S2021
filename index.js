@@ -118,22 +118,49 @@ app.post('/obtenerfoto', function (req, res) {
 /*Login , Registro , subir archivos , editar archivo , eliminar archivo , agregar amigos , buscar usuario , ver archivos de amigos , Ver mis archivos públicos y privados */
 
 //Login
+/*
+RECIBE:
+{
+    "username":"",
+    "password":""
+}
+
+DEVUELVE:
+{
+        "idUsuario": 1,
+        "image": "files/e10eabfc-1a2d-4299-8055-2da1cb8a275e.jpg"
+}
+*/
 app.get("/login", async (req, res) => {
   let body = req.body;
-  conn.query("SELECT username, password FROM Usuario WHERE username = ? AND password = ?",[body.username,body.password], function (err, result) {
+  conn.query("SELECT idUsuario, image FROM Usuario WHERE username = ? AND password = ?",[body.username,body.password], function (err, result) {
     if (err) throw err;
     res.send(result);
   });
 });
 
 //Registro
+/*
+RECIBE:
+{
+    "username":"",
+    "password":"",
+    "image":"",
+    "email":"",
+    "ext":""
+}
+
+DEVUELVE:
+{
+  "ok":true
+}
+*/ 
 app.post("/crearUsuario", async (req, res) => {
   let body = req.body;
-
-  let nombrei = "files/" +uuid.v4()+ ".jpg";
+  let nombrei = "files/" +uuid.v4()+ body.ext;
   let buff = new Buffer.from(body.image, 'base64');
   const params = {
-    Bucket: "ejemplosemiarchivos",
+    Bucket: "archivos-13--p1",
     Key: nombrei,
     Body: buff,
     ACL: 'public-read'
@@ -141,145 +168,200 @@ app.post("/crearUsuario", async (req, res) => {
   s3.upload(params, function sync(err, data) {}); 
   conn.query('INSERT INTO Usuario(email,username,password,image) VALUES(?,?,?,?)', [body.email, body.username, body.password,nombrei], function (err, result) {
     if (err) throw err;
-    res.send("success");
+    res.send({ok:true});
   });
   
 });
 
 //Subir Archivos
+/*
+RECIBE:
+{
+    "nombre":"",
+    "usuario":,
+    "visibilidad":,
+    "pdf":"",
+    "ext":""
+}
+
+DEVUELVE:
+{
+  "ok":true
+}
+*/
 app.post("/subirArchivo", async (req, res) => {
-  //S3
-  var nombre = req.body.nombre;
-  var pdf = req.body.pdf;  //base 64
-  //carpeta y nombre que quieran darle al pdf
-  var nombrei = "files/" + nombre +uuid.v4()+ ".pdf";
-  //se convierte la base64 a bytes
+  var pdf = req.body.pdf;
+  var nombrei = "files/" + req.body.nombre +uuid.v4()+ req.body.ext;
   let buff = new Buffer.from(pdf, 'base64');
-  const params = {
-    Bucket: "ejemplosemiarchivos",
-    Key: nombrei,
-    Body: buff,
-    ACL: 'public-read'
-  };
-
-  s3.upload(params, function sync(err, data) {
-      if (err) {
-        res.status(500).send(err)
-      } else {
-        console.log(data.Location);  
-        res.status(200).send(data);                        
-   }}); 
-
-  //RDS
-  let body = req.body;
-  conn.query('INSERT INTO Archivo(Nombre, Ruta, Usuario_idUsuario, Visibilidad) VALUES(?,?,?,?)', [body.nombre, nombrei, body.usuario, body.visibilidad], function (err, result) {
-    if (err) throw err;
-    res.send("success");
-  });
-});
-
-//Subir Foto
-app.post("/subirArchivo", async (req, res) => {
-  //S3
-  var id = req.body.id;
-  var foto = req.body.foto;     //base64
-  var ext = req.body.ext;     //base64
-  //carpeta y nombre que quieran darle a la imagen
-
-  var nombrei = "fotos/" + id +uuid.v4()+ ext;
-
-  //se convierte la base64 a bytes
-  let buff = new Buffer.from(foto, 'base64');
-
-  
   const params = {
     Bucket: "archivos-13--p1",
     Key: nombrei,
     Body: buff,
-    ContentType: "image",
     ACL: 'public-read'
   };
-  
-  const putResult = s3.putObject(params).promise();
-  res.json({ mensaje: putResult })
-
-  //RDS
+  s3.upload(params, function sync(err, data) {}); 
   let body = req.body;
-  conn.query('INSERT INTO Archivo(Nombre, Ruta, Usuario_idUsuario, Visibilidad) VALUES(?,?,?,-1)', [body.nombre, nombrei, body.usuario, body.visibilidad], function (err, result) {
+  conn.query('INSERT INTO Archivo(Nombre, Ruta, Usuario_idUsuario, Visibilidad) VALUES(?,?,?,?)', [body.nombre+body.ext, nombrei, body.usuario, body.visibilidad], function (err, result) {
     if (err) throw err;
-    res.send("success");
+    res.send({ok:true});
   });
 });
 
 //Editar Archivo
+/*
+RECIBE:
+{
+    "nombre":"",
+    "idArchivo":,
+    "visibilidad":
+}
+
+DEVUELVE:
+{
+  "ok":true
+}
+*/
 app.post("/editarArchivo", async (req, res) => {
   let body = req.body;
-  conn.query('UPDATE Archivos SET nombre =?, visibilidad=? WHERE idArchivo=?', [body.nombre, body.visibilidad, body.idArchivo], function (err, result) {
+  conn.query('UPDATE Archivo SET nombre =?, visibilidad=? WHERE idArchivo=?', [body.nombre, body.visibilidad, body.idArchivo], function (err, result) {
     if (err) throw err;
-    res.send("success");
+    res.send({ok:true});
   });
 });
 
 //Eliminar Archivo
+/*
+RECIBE:
+{
+    "idArchivo":
+}
+
+DEVUELVE:
+{
+  "ok":true
+}
+*/
 app.post("/eliminarArchivo", async (req, res) => {
   let body = req.body;
-  conn.query('DELETE FROM Archivos WHERE idArchivo=?', [body.nombre, body.visibilidad, body.idArchivo], function (err, result) {
+  conn.query('DELETE FROM Archivo WHERE idArchivo=?', [body.idArchivo], function (err, result) {
     if (err) throw err;
-    res.send("success");
+    res.send({ok:true});
   });
 });
 
 //Agregar Amigos
+/*
+RECIBE:
+{
+    "usuario1":,
+    "usuario2":
+}
+
+DEVUELVE:
+{
+  "ok":true
+}
+*/
 app.post("/agregarAmigos", async (req, res) => {
   let body = req.body;
   conn.query('INSERT INTO Amigos(Usuario_idUsuario, Usuario_idUsuario1) VALUES(?,?) ', [body.usuario1, body.usuario2], function (err, result) {
     if (err) throw err;
-    res.send("success");
+    res.send({ok:true});
   });
 });
 
 
 //Agregar Amigos
+/*
+RECIBE:
+{
+    "usuario1":,
+    "usuario2":
+}
+
+DEVUELVE:
+{
+  "ok":true
+}
+*/
 app.post("/eliminarAmigos", async (req, res) => {
   let body = req.body;
   conn.query('DELETE FROM Amigos WHERE Usuario_idUsuario=? AND Usuario_idUsuario1 = ?', [body.usuario1, body.usuario2], function (err, result) {
     if (err) throw err;
-    res.send("success");
+    res.send({ok:true});
   });
 });
 
 //Buscar Usuario
+/*
+RECIBE:
+{
+    "username":""
+}
+
+DEVUELVE:
+{
+        "idUsuario": ,
+        "username": "",
+        "image": "",
+        "archivos": 
+    }
+*/
 app.get("/buscarUsuario", async (req, res) => {
   let body = req.body;
-  conn.query("SELECT nombre, username FROM Usuario WHERE username LIKE \"%?%\"",[body.username,body.password], function (err, result) {
+  conn.query("SELECT idUsuario, username, image, (SELECT COUNT(*) FROM Archivo WHERE Usuario_idUsuario = idUsuario) as archivos FROM Usuario WHERE username = ?",[body.username], function (err, result) {
+    
     if (err) throw err;
-    res.send(result);
+    res.send(result[0]);
   });
 });
 
-//Ver Archivos de Amigos
+//Ver Archivos de todos mis Amigos
+/*
+RECIBE:
+{
+    "idUsuario":
+}
+
+DEVUELVE:
+[
+    {
+        "Nombre": "",
+        "Ruta": "",
+        "propietario": "",
+        "idUsuario": 
+    }
+]
+*/
 app.get("/verArchivos", async (req, res) => {
   let body = req.body;
-  conn.query("SELECT Nombre, Ruta FROM Archivo WHERE Usuario_idUsuario = ? AND Visibilidad=1",[body.username], function (err, result) {
+  conn.query("SELECT Nombre, Ruta,  (SELECT username FROM Usuario WHERE idUsuario=Archivo.Usuario_idUsuario)  as propietario, Archivo.Usuario_idUsuario as idUsuario FROM Archivo WHERE Archivo.Visibilidad = 1 AND (  Archivo.Usuario_idUsuario IN (SELECT Usuario_idUsuario FROM Amigos WHERE USuario_idUsuario1= ? )  OR Archivo.Usuario_idUsuario IN (SELECT Usuario_idUsuario1 FROM Amigos WHERE Amigos.Usuario_idUsuario = ? ));",[body.idUsuario,body.idUsuario], function (err, result) {
     if (err) throw err;
     res.send(result);
   });
 });
 
-//Ver Archivos de Amigos
+//Ver mis archivos
+/*
+RECIBE:
+{
+    "idUsuario":
+}
+
+DEVUELVE:
+[
+    {
+        "idArchivo": ,
+        "Nombre": "",
+        "Ruta": "",
+        "Visibilidad": 
+    }
+]
+*/
 app.get("/misArchivos", async (req, res) => {
   let body = req.body;
-  conn.query("SELECT idArchivo, Nombre, Ruta FROM Archivo WHERE Usuario_idUsuario = ?",[body.username], function (err, result) {
+  conn.query("SELECT idArchivo, Nombre, Ruta, Visibilidad FROM Archivo WHERE Usuario_idUsuario = ?",[body.idUsuario], function (err, result) {
     if (err) throw err;
     res.send(result);
-  });
-});
-
-//Agregar Amigos
-app.post("/eliminarArchivo", async (req, res) => {
-  let body = req.body;
-  conn.query('DELETE FROM Archivo WHERE idArchivo=?', [body.archivo], function (err, result) {
-    if (err) throw err;
-    res.send("success");
   });
 });
