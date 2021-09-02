@@ -129,10 +129,21 @@ app.get("/login", async (req, res) => {
 //Registro
 app.post("/crearUsuario", async (req, res) => {
   let body = req.body;
-  conn.query('INSERT INTO Usuario(nombre, username, password) VALUES(?,?,?)', [body.nombre, body.username, body.password], function (err, result) {
+
+  let nombrei = "files/" +uuid.v4()+ ".jpg";
+  let buff = new Buffer.from(body.image, 'base64');
+  const params = {
+    Bucket: "ejemplosemiarchivos",
+    Key: nombrei,
+    Body: buff,
+    ACL: 'public-read'
+  };
+  s3.upload(params, function sync(err, data) {}); 
+  conn.query('INSERT INTO Usuario(email,username,password,image) VALUES(?,?,?,?)', [body.email, body.username, body.password,nombrei], function (err, result) {
     if (err) throw err;
     res.send("success");
   });
+  
 });
 
 //Subir Archivos
