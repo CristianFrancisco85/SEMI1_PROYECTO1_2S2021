@@ -2,16 +2,27 @@ import React, { useState } from "react"
 import { useHistory } from "react-router"
 import {Col,Row,Container,Card, Button, Form, Image } from "react-bootstrap" 
 import { Link } from "react-router-dom"
+import { loginUser } from "../dataService"
+import { useLoggedUser } from "../contexts/globalContext"
 
 const Login = () => {
 
     let history =  useHistory()
+    const [user,setUser] = useLoggedUser()
 
     const handleLogIn = async (event) => {
         event.preventDefault();
         let formData = new FormData(event.target);
-        
-        history.push('/dashboard')
+        await loginUser(formData.get('username'),formData.get('password')).then((res)=>{
+        if(res.length==0){
+            alert('Credenciales Invalidos')
+        }
+        else{
+            console.log(res[0]);
+            setUser(res[0])
+            window.sessionStorage.setItem('user',JSON.stringify(res[0]))
+            history.push('/dashboard')
+        }})
     }
 
     return (
@@ -27,10 +38,10 @@ const Login = () => {
                     <Card border='secondary'>
                         <Card.Header><Card.Title> Login </Card.Title></Card.Header>
                         <Card.Body>
-                            <Form onSubmit={(e)=>handleLogIn(e)}>
+                            <Form onSubmit={async (e)=> await handleLogIn(e)}>
                                 <Form.Group>
-                                    <Form.Label>Correo Electronico</Form.Label>
-                                    <Form.Control type="email" placeholder="Enter email" name="email"/>
+                                    <Form.Label>Username</Form.Label>
+                                    <Form.Control type="text" placeholder="Enter username" name="username"/>
                                 </Form.Group>
 
                                 <Form.Group>

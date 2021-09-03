@@ -12,7 +12,8 @@ import ViewFiles from './components/viewFiles';
 
 function App() {
 
-  const [user,setUser] = useState({})
+  let auxuser = JSON.parse(sessionStorage.getItem('user'))
+  const [user,setUser] = useState(auxuser?auxuser:{})
 
   const globalState = {
     loggedUser : [user,setUser]

@@ -1,20 +1,41 @@
 import React, { useState } from 'react'
 import {Form,Image,Container,FormControl,Button,Row, Col,FormGroup} from 'react-bootstrap'
+import { createUser, encodeBase64 } from '../dataService'
 import userIcon from '../images/userIcon.png'
+import { useHistory } from "react-router"
 
 
 const SignUp = () => {
 
     const [userImage,setUserImage] = useState(userIcon)
+    const [userImage64,setUserImage64] = useState(undefined)
+    let history =  useHistory()
     
-    const handleSubmit = (event) =>{
+    const handleSubmit = async (event) =>{
         event.preventDefault()
-        alert("Registrado")
+        let formData = new FormData(event.target);
+        if(formData.password!=formData.confirmpassword) {alert('Las contraseñas no coinciden')}
+        let response = await createUser(formData.get('email'),formData.get('username'),formData.get('password'),userImage64)
+        if(response.ok){
+            alert('Registrado')
+            history.push('/login')
+        }
+        else{
+            alert('Error')
+        }
+        
     }
 
-    const handleUpload = (event) =>{
+    const handleUpload = async (event) =>{
         setUserImage(URL.createObjectURL(event.target.files[0]))
+        let base64=await encodeBase64(event.target.files[0])
+        base64 = base64.replace('data:image/png;base64,','')
+        base64 = base64.replace('data:image/jpeg;base64,','')
+
+        setUserImage64(base64)
     }
+
+
 
     return(
         <Container fluid>
@@ -31,25 +52,25 @@ const SignUp = () => {
 
                 <Row className='mt-5 justify-content-center'>
                     <FormGroup className="mb-3">
-                        <FormControl type="file" size="sm" onChange={(e)=>handleUpload(e)}/>
+                        <FormControl name='image' type="file" size="sm" onChange={async (e)=> await handleUpload(e)}/>
                     </FormGroup>     
                 </Row>
             </Col>
             <Col className=' mt-5 justify-content-center align-items-center'>
-                <Form onSubmit={(e)=>handleSubmit(e)} >
+                <Form onSubmit={async (e)=> await handleSubmit(e)} >
                     <Form.Group>
                         <Form.Label>Username</Form.Label>
                         <FormControl required type="text" name="username" />
                     </Form.Group>
 
                     <Form.Group>
-                        <Form.Label>Nombre Completo</Form.Label>
-                        <FormControl required type="text" name="name" />
+                        <Form.Label>Email</Form.Label>
+                        <FormControl required type="text" name="email" />
                     </Form.Group>
                     
                     <Form.Group>
                         <Form.Label>Contraseña</Form.Label>
-                        <FormControl required type="email" placeholder="Minimo 6 caractares" name="password"/>
+                        <FormControl required type="password" placeholder="Minimo 6 caractares" name="password"/>
                     </Form.Group>
 
                     <Form.Group>
