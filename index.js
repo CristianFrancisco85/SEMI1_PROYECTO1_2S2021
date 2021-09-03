@@ -387,3 +387,30 @@ app.post("/misArchivos", async (req, res) => {
     res.send(result);
   });
 });
+
+//Ver Archivos de todos mis Amigos
+/*
+RECIBE:
+{
+    "idUsuario":,
+    "nombre":""
+}
+
+DEVUELVE:
+[
+    {
+        "Nombre": "",
+        "Ruta": "",
+        "propietario": "",
+        "idUsuario": 
+    }
+]
+*/
+app.post("/buscarArchivo", async (req, res) => {
+  let body = req.body;
+  body.nombre="%"+body.nombre+"%"
+  conn.query("SELECT Nombre, Ruta,  (SELECT username FROM Usuario WHERE idUsuario=Archivo.Usuario_idUsuario)  as propietario, Archivo.Usuario_idUsuario as idUsuario FROM Archivo WHERE Archivo.Nombre LIKE ? AND Archivo.Visibilidad = 1 AND (  Archivo.Usuario_idUsuario IN (SELECT Usuario_idUsuario FROM Amigos WHERE USuario_idUsuario1= ? )  OR Archivo.Usuario_idUsuario IN (SELECT Usuario_idUsuario1 FROM Amigos WHERE Amigos.Usuario_idUsuario = ? ));",[body.nombre,body.idUsuario,body.idUsuario], function (err, result) {
+    if (err) throw err;
+    res.send(result);
+  });
+});
