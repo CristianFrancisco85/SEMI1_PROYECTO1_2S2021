@@ -129,12 +129,15 @@ DEVUELVE:
 {
         "idUsuario": 1,
         "image": "files/e10eabfc-1a2d-4299-8055-2da1cb8a275e.jpg"
+        "username":
+        "password"
 }
 */
-app.get("/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   let body = req.body;
-  conn.query("SELECT idUsuario, image FROM Usuario WHERE username = ? AND password = ?",[body.username,body.password], function (err, result) {
+  conn.query("SELECT idUsuario, image,username,password FROM Usuario WHERE username = ? AND password = ?",[body.username,body.password], function (err, result) {
     if (err) throw err;
+    console.log(result);
     res.send(result);
   });
 });
@@ -180,7 +183,7 @@ RECIBE:
     "nombre":"",
     "usuario":,
     "visibilidad":,
-    "pdf":"",
+    "data":"",
     "ext":""
 }
 
@@ -190,9 +193,9 @@ DEVUELVE:
 }
 */
 app.post("/subirArchivo", async (req, res) => {
-  var pdf = req.body.pdf;
+  var data = req.body.data;
   var nombrei = "files/" + req.body.nombre +uuid.v4()+ req.body.ext;
-  let buff = new Buffer.from(pdf, 'base64');
+  let buff = new Buffer.from(data, 'base64');
   const params = {
     Bucket: "archivos-13--p1",
     Key: nombrei,
@@ -271,7 +274,7 @@ app.post("/agregarAmigos", async (req, res) => {
 });
 
 
-//Agregar Amigos
+//Eliminar Amigos
 /*
 RECIBE:
 {
@@ -307,14 +310,33 @@ DEVUELVE:
         "archivos": 
     }
 */
-app.get("/buscarUsuario", async (req, res) => {
+app.post("/buscarUsuario", async (req, res) => {
   let body = req.body;
-  conn.query("SELECT idUsuario, username, image, (SELECT COUNT(*) FROM Archivo WHERE Usuario_idUsuario = idUsuario) as archivos FROM Usuario WHERE username = ?",[body.username], function (err, result) {
+  conn.query("SELECT idUsuario, username, image, (SELECT COUNT(*) FROM Archivo WHERE Usuario_idUsuario = idUsuario) as archivos FROM Usuario WHERE username LIKE '%"+body.username+"%'", function (err, result) {
     
     if (err) throw err;
-    res.send(result[0]);
+    res.send(result);
   });
 });
+
+//Get Usuarios
+/*
+DEVUELVE:
+{
+        "idUsuario": ,
+        "username": "",
+        "image": "",
+        "archivos": 
+    }
+*/
+app.get("/getUsuarios", async (req, res) => {
+  let body = req.body;
+  conn.query("SELECT idUsuario, username, image, (SELECT COUNT(*) FROM Archivo WHERE Usuario_idUsuario = idUsuario) as archivos FROM Usuario", function (err, result) {
+    if (err) throw err;
+    res.send(result);
+  });
+});
+
 
 //Ver Archivos de todos mis Amigos
 /*
@@ -333,7 +355,7 @@ DEVUELVE:
     }
 ]
 */
-app.get("/verArchivos", async (req, res) => {
+app.post("/verArchivos", async (req, res) => {
   let body = req.body;
   conn.query("SELECT Nombre, Ruta,  (SELECT username FROM Usuario WHERE idUsuario=Archivo.Usuario_idUsuario)  as propietario, Archivo.Usuario_idUsuario as idUsuario FROM Archivo WHERE Archivo.Visibilidad = 1 AND (  Archivo.Usuario_idUsuario IN (SELECT Usuario_idUsuario FROM Amigos WHERE USuario_idUsuario1= ? )  OR Archivo.Usuario_idUsuario IN (SELECT Usuario_idUsuario1 FROM Amigos WHERE Amigos.Usuario_idUsuario = ? ));",[body.idUsuario,body.idUsuario], function (err, result) {
     if (err) throw err;
@@ -358,7 +380,7 @@ DEVUELVE:
     }
 ]
 */
-app.get("/misArchivos", async (req, res) => {
+app.post("/misArchivos", async (req, res) => {
   let body = req.body;
   conn.query("SELECT idArchivo, Nombre, Ruta, Visibilidad FROM Archivo WHERE Usuario_idUsuario = ?",[body.idUsuario], function (err, result) {
     if (err) throw err;
