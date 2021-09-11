@@ -1,6 +1,6 @@
 
 let md5 = require('md5');
-let API_URL = 'http://localhost:9000'
+let API_URL = 'http://sem1proyecto1-lb-180056161.us-east-2.elb.amazonaws.com:9000'
 export const BUCKET_URL = 'https://archivos-13--p1.s3.us-east-2.amazonaws.com/'
 
 

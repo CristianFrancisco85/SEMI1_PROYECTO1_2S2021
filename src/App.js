@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import { GlobalContext } from './contexts/globalContext';
-import {BrowserRouter,Switch,Route,Redirect} from 'react-router-dom'
+import {BrowserRouter,Switch,Route,Redirect, HashRouter} from 'react-router-dom'
 import Login from './components/login'
 import Dashboard from './components/dashboard';
 import SignUp from './components/signup';
@@ -23,7 +23,7 @@ function App() {
     <React.Fragment>
 
       <GlobalContext.Provider value={globalState}>
-      <BrowserRouter>
+      <HashRouter>
       
       <Switch>
           <Route  exact path="/login" component={Login}/>
@@ -34,7 +34,7 @@ function App() {
           <Redirect from="/" to="/login" />
       </Switch>
       
-      </BrowserRouter>
+      </HashRouter>
       </GlobalContext.Provider>
 
     </React.Fragment>
