@@ -177,12 +177,12 @@ A continuación se muestra la configuración de los distintos servicios.
 <table>
     <tr>
         <td>
-            <img src="./images/S3_1.png" heigth="350">
+            <img src="./images/s3_1.png" heigth="350">
         </td>
     </tr>
     <tr>
         <td>
-            <img src="./images/S3_2.png">
+            <img src="./images/s3_2.png">
         </td>
     </tr>
 </table>
